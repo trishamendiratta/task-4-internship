@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Listing</title>
+  <style>
+    :root {
+      --bg: #1e1e2f;
+      --card-bg: #2f2f47;
+      --text: #eeeeee;
+      --primary: #00adb5;
+      --accent: #ff5722;
+      --radius: 10px;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 2rem;
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--primary);
+    }
+
+    .filters {
+      display: flex;
+      gap: 1rem;
+      margin: 2rem auto;
+      max-width: 800px;
+      justify-content: center;
+    }
+
+    select {
+      padding: 0.5rem;
+      border-radius: var(--radius);
+      border: none;
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .product {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 1rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s ease;
+    }
+
+    .product:hover {
+      transform: translateY(-5px);
+    }
+
+    .product h3 {
+      margin: 0.5rem 0;
+      color: var(--accent);
+    }
+
+    .product p {
+      margin: 0.3rem 0;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Product Listing Page</h1>
+  <div class="filters">
+    <select id="categoryFilter">
+      <option value="all">All Categories</option>
+      <option value="Books">Books</option>
+      <option value="Electronics">Electronics</option>
+      <option value="Clothing">Clothing</option>
+    </select>
+
+    <select id="sortFilter">
+      <option value="default">Sort By</option>
+      <option value="priceLow">Price: Low to High</option>
+      <option value="priceHigh">Price: High to Low</option>
+      <option value="ratingHigh">Rating: High to Low</option>
+    </select>
+  </div>
+
+  <div class="products" id="productList"></div>
+
+  <script>
+    const exchangeRate = 83.2; 
+    const products = [
+      { name: "JavaScript Guide", category: "Books", price: 10.99, rating: 4.8 },
+      { name: "Smartphone", category: "Electronics", price: 299.99, rating: 4.5 },
+      { name: "Headphones", category: "Electronics", price: 55.99, rating: 4.2 },
+      { name: "Notebook", category: "Books", price: 1.49, rating: 4.0 },
+      { name: "T-Shirt", category: "Clothing", price: 12.99, rating: 4.1 },
+      { name: "Jeans", category: "Clothing", price: 25.99, rating: 4.3 }
+    ];
+
+    const productList = document.getElementById('productList');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const sortFilter = document.getElementById('sortFilter');
+
+    function displayProducts(list) {
+      productList.innerHTML = '';
+      list.forEach(p => {
+        const priceInr = (p.price * exchangeRate).toFixed(2);
+        productList.innerHTML += `
+          <div class="product">
+            <h3>${p.name}</h3>
+            <p>Category: ${p.category}</p>
+            <p>Price: ₹${priceInr}</p>
+            <p>Rating: ${p.rating} ⭐</p>
+          </div>
+        `;
+      });
+    }
+
+    function filterAndSort() {
+      let filtered = [...products];
+
+      const selectedCategory = categoryFilter.value;
+      const selectedSort = sortFilter.value;
+
+      if (selectedCategory !== 'all') {
+        filtered = filtered.filter(p => p.category === selectedCategory);
+      }
+
+      switch (selectedSort) {
+        case 'priceLow':
+          filtered.sort((a, b) => a.price - b.price);
+          break;
+        case 'priceHigh':
+          filtered.sort((a, b) => b.price - a.price);
+          break;
+        case 'ratingHigh':
+          filtered.sort((a, b) => b.rating - a.rating);
+          break;
+      }
+
+      displayProducts(filtered);
+    }
+
+    categoryFilter.addEventListener('change', filterAndSort);
+    sortFilter.addEventListener('change', filterAndSort);
+
+    displayProducts(products);
+  </script>
+</body>
+</html>
+

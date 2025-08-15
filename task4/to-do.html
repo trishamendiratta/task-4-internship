@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>To-Do List App</title>
+  <style>
+    :root {
+      --bg: #1e1e2f;
+      --card-bg: #2f2f47;
+      --primary: #00adb5;
+      --accent: #ff5722;
+      --text: #eeeeee;
+      --radius: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+      min-height: 100vh;
+    }
+
+    h1 {
+      margin-bottom: 1rem;
+      color: var(--primary);
+    }
+
+    .todo-container {
+      background: var(--card-bg);
+      padding: 2rem;
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    input[type="text"] {
+      width: 70%;
+      padding: 0.7rem;
+      border: none;
+      border-radius: var(--radius);
+      margin-right: 0.5rem;
+    }
+
+    button {
+      padding: 0.7rem 1rem;
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+    }
+
+    .add-btn {
+      background: var(--accent);
+    }
+
+    ul {
+      list-style: none;
+      margin-top: 1rem;
+    }
+
+    li {
+      background: #39395e;
+      padding: 0.8rem;
+      margin: 0.5rem 0;
+      border-radius: var(--radius);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.3s;
+      gap: 0.5rem;
+    }
+
+    li.completed {
+      text-decoration: line-through;
+      opacity: 0.6;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .complete-btn {
+      background: var(--primary);
+    }
+
+    .delete-btn {
+      background: #ff1744;
+    }
+  </style>
+</head>
+<body>
+  <h1>To-Do List</h1>
+  <div class="todo-container">
+    <div>
+      <input type="text" id="taskInput" placeholder="Enter a task...">
+      <button class="add-btn" onclick="addTask()">Add</button>
+    </div>
+    <ul id="taskList"></ul>
+  </div>
+
+  <script>
+    const taskInput = document.getElementById('taskInput');
+    const taskList = document.getElementById('taskList');
+
+    function loadTasks() {
+      const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+      tasks.forEach(task => createTaskElement(task.text, task.completed));
+    }
+
+    function saveTasks() {
+      const tasks = Array.from(taskList.children).map(li => ({
+        text: li.querySelector('span').textContent,
+        completed: li.classList.contains('completed')
+      }));
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+    }
+
+    function createTaskElement(text, completed = false) {
+      const li = document.createElement('li');
+      if (completed) li.classList.add('completed');
+
+      const span = document.createElement('span');
+      span.textContent = text;
+
+      const btnGroup = document.createElement('div');
+      btnGroup.classList.add('btn-group');
+
+      const completeBtn = document.createElement('button');
+      completeBtn.textContent = 'Complete';
+      completeBtn.classList.add('complete-btn');
+      completeBtn.onclick = () => {
+        li.classList.toggle('completed');
+        saveTasks();
+      };
+
+      const delBtn = document.createElement('button');
+      delBtn.textContent = 'Delete';
+      delBtn.classList.add('delete-btn');
+      delBtn.onclick = () => {
+        li.remove();
+        saveTasks();
+      };
+
+      btnGroup.appendChild(completeBtn);
+      btnGroup.appendChild(delBtn);
+
+      li.appendChild(span);
+      li.appendChild(btnGroup);
+      taskList.appendChild(li);
+      saveTasks();
+    }
+
+    function addTask() {
+      const text = taskInput.value.trim();
+      if (text) {
+        createTaskElement(text);
+        taskInput.value = '';
+      }
+    }
+
+    window.onload = loadTasks;
+  </script>
+</body>
+</html>
+
+
